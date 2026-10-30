@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "khudoydev.sysmon",
+  "name": "System Monitor",
+  "version": "1.0.0",
+  "author": "khudoydev",
+  "license": "MIT",
+  "description": "Network speed, CPU and Memory usage widget with detailed process tooltips for Omarchy bar",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "System Monitor",
+    "description": "Network speed, CPU and Memory",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
