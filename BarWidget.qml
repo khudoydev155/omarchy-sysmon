@@ -33,6 +33,10 @@ BarWidget {
   property string cpuTooltipText: " CPU: 0%"
   property string memTooltipText: "󰘚 RAM: 0%"
 
+  readonly property bool isAnyHovered: (netMouseArea && netMouseArea.containsMouse) ||
+                                       (cpuMouseArea && cpuMouseArea.containsMouse) ||
+                                       (memMouseArea && memMouseArea.containsMouse)
+
   implicitWidth: contentRow.implicitWidth + Style.space(12)
   implicitHeight: root.barSize
 
@@ -79,7 +83,7 @@ BarWidget {
     // Live CPU & NET Rates
     if (root.prevTotal > 0 && total > root.prevTotal) {
       var dt = (now - root.prevTime) / 1000
-      if (dt <= 0.1) dt = 2.0
+      if (dt <= 0.1) dt = 1.0
 
       var totalDelta = total - root.prevTotal
       var idleDelta = idle - root.prevIdle
@@ -108,8 +112,6 @@ BarWidget {
     // Memory %
     root.memPercent = data.mem_pct || 0
     root.memText = (data.mem_pct || 0) + "%"
-
-    // Construct Separate Tooltips
 
     // 1. Network Tooltip
     var netLines = [
@@ -152,6 +154,13 @@ BarWidget {
       }
     }
     root.memTooltipText = memLines.join("\n")
+
+    // Live refresh active open tooltip
+    if (root.bar) {
+      if (netMouseArea.containsMouse) root.bar.showTooltip(netItem, root.netTooltipText)
+      else if (cpuMouseArea.containsMouse) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
+      else if (memMouseArea.containsMouse) root.bar.showTooltip(memItem, root.memTooltipText)
+    }
   }
 
   Process {
@@ -165,7 +174,7 @@ BarWidget {
 
   Timer {
     id: pollTimer
-    interval: 2000
+    interval: root.isAnyHovered ? 1000 : 1500
     running: true
     repeat: true
     triggeredOnStart: true
@@ -241,7 +250,10 @@ BarWidget {
           anchors.fill: parent
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
-          onEntered: if (root.bar) root.bar.showTooltip(netItem, root.netTooltipText)
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(netItem, root.netTooltipText)
+          }
           onExited: if (root.bar) root.bar.hideTooltip(netItem)
           onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
         }
@@ -286,7 +298,10 @@ BarWidget {
           anchors.fill: parent
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
-          onEntered: if (root.bar) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
+          }
           onExited: if (root.bar) root.bar.hideTooltip(cpuItem)
           onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
         }
@@ -331,7 +346,10 @@ BarWidget {
           anchors.fill: parent
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
-          onEntered: if (root.bar) root.bar.showTooltip(memItem, root.memTooltipText)
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(memItem, root.memTooltipText)
+          }
           onExited: if (root.bar) root.bar.hideTooltip(memItem)
           onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
         }
