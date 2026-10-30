@@ -33,10 +33,6 @@ BarWidget {
   property string cpuTooltipText: " CPU: 0%"
   property string memTooltipText: "󰘚 RAM: 0%"
 
-  readonly property bool isAnyHovered: (netMouseArea && netMouseArea.containsMouse) ||
-                                       (cpuMouseArea && cpuMouseArea.containsMouse) ||
-                                       (memMouseArea && memMouseArea.containsMouse)
-
   implicitWidth: contentRow.implicitWidth + Style.space(12)
   implicitHeight: root.barSize
 
@@ -155,11 +151,15 @@ BarWidget {
     }
     root.memTooltipText = memLines.join("\n")
 
-    // Live refresh active open tooltip
-    if (root.bar) {
-      if (netMouseArea.containsMouse) root.bar.showTooltip(netItem, root.netTooltipText)
-      else if (cpuMouseArea.containsMouse) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
-      else if (memMouseArea.containsMouse) root.bar.showTooltip(memItem, root.memTooltipText)
+    // Live update open tooltip text WITHOUT calling showTooltip (prevents flicker!)
+    if (root.bar && root.bar.tooltipShown) {
+      if (root.bar.tooltipTarget === netItem) {
+        root.bar.tooltipText = root.netTooltipText
+      } else if (root.bar.tooltipTarget === cpuItem) {
+        root.bar.tooltipText = root.cpuTooltipText
+      } else if (root.bar.tooltipTarget === memItem) {
+        root.bar.tooltipText = root.memTooltipText
+      }
     }
   }
 
@@ -174,7 +174,7 @@ BarWidget {
 
   Timer {
     id: pollTimer
-    interval: root.isAnyHovered ? 1000 : 1500
+    interval: 1500
     running: true
     repeat: true
     triggeredOnStart: true
@@ -192,10 +192,10 @@ BarWidget {
       anchors.centerIn: parent
       spacing: Style.space(10)
 
-      // 1. Network Column Item
+      // 1. Network Column Item (Stable width avoids cursor exit jitter)
       Item {
         id: netItem
-        width: netCol.implicitWidth + Style.space(4)
+        width: Math.max(Style.space(92), netCol.implicitWidth + Style.space(6))
         height: root.barSize
         readonly property bool tooltipHovered: netMouseArea.containsMouse
 
@@ -251,7 +251,6 @@ BarWidget {
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
           onEntered: {
-            if (!sysmonProc.running) sysmonProc.running = true
             if (root.bar) root.bar.showTooltip(netItem, root.netTooltipText)
           }
           onExited: if (root.bar) root.bar.hideTooltip(netItem)
@@ -259,10 +258,10 @@ BarWidget {
         }
       }
 
-      // 2. CPU Column Item
+      // 2. CPU Column Item (Stable width avoids cursor exit jitter)
       Item {
         id: cpuItem
-        width: cpuCol.implicitWidth + Style.space(4)
+        width: Math.max(Style.space(34), cpuCol.implicitWidth + Style.space(6))
         height: root.barSize
         readonly property bool tooltipHovered: cpuMouseArea.containsMouse
 
@@ -299,7 +298,6 @@ BarWidget {
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
           onEntered: {
-            if (!sysmonProc.running) sysmonProc.running = true
             if (root.bar) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
           }
           onExited: if (root.bar) root.bar.hideTooltip(cpuItem)
@@ -307,10 +305,10 @@ BarWidget {
         }
       }
 
-      // 3. MEM Column Item
+      // 3. MEM Column Item (Stable width avoids cursor exit jitter)
       Item {
         id: memItem
-        width: memCol.implicitWidth + Style.space(4)
+        width: Math.max(Style.space(34), memCol.implicitWidth + Style.space(6))
         height: root.barSize
         readonly property bool tooltipHovered: memMouseArea.containsMouse
 
@@ -347,7 +345,6 @@ BarWidget {
           hoverEnabled: true
           cursorShape: Qt.PointingHandCursor
           onEntered: {
-            if (!sysmonProc.running) sysmonProc.running = true
             if (root.bar) root.bar.showTooltip(memItem, root.memTooltipText)
           }
           onExited: if (root.bar) root.bar.hideTooltip(memItem)
