@@ -33,7 +33,7 @@ BarWidget {
   property string cpuTooltipText: " CPU: 0%"
   property string memTooltipText: "󰘚 RAM: 0%"
 
-  readonly property bool tooltipHovered: netHover.hovered || cpuHover.hovered || memHover.hovered
+  readonly property bool tooltipHovered: netMouseArea.containsMouse || cpuMouseArea.containsMouse || memMouseArea.containsMouse
 
   implicitWidth: Style.space(192)
   implicitHeight: root.barSize
@@ -188,27 +188,7 @@ BarWidget {
         id: netItem
         width: Style.space(88)
         height: root.barSize
-        readonly property bool tooltipHovered: netHover.hovered
-
-        HoverHandler {
-          id: netHover
-          onHoveredChanged: {
-            if (hovered) {
-              if (!sysmonProc.running) sysmonProc.running = true
-              if (root.bar) root.bar.showTooltip(netItem, root.netTooltipText)
-            } else {
-              if (root.bar) root.bar.hideTooltip(netItem)
-            }
-          }
-        }
-
-        MouseArea {
-          id: netMouseArea
-          anchors.fill: parent
-          hoverEnabled: false
-          cursorShape: Qt.PointingHandCursor
-          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
-        }
+        readonly property bool tooltipHovered: netMouseArea.containsMouse
 
         Column {
           id: netCol
@@ -255,6 +235,19 @@ BarWidget {
             }
           }
         }
+
+        MouseArea {
+          id: netMouseArea
+          anchors.fill: parent
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(netItem, root.netTooltipText)
+          }
+          onExited: if (root.bar) root.bar.hideTooltip(netItem)
+          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
+        }
       }
 
       // 2. CPU Column Item (Fixed stable width completely prevents geometry jitter)
@@ -262,27 +255,7 @@ BarWidget {
         id: cpuItem
         width: Style.space(38)
         height: root.barSize
-        readonly property bool tooltipHovered: cpuHover.hovered
-
-        HoverHandler {
-          id: cpuHover
-          onHoveredChanged: {
-            if (hovered) {
-              if (!sysmonProc.running) sysmonProc.running = true
-              if (root.bar) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
-            } else {
-              if (root.bar) root.bar.hideTooltip(cpuItem)
-            }
-          }
-        }
-
-        MouseArea {
-          id: cpuMouseArea
-          anchors.fill: parent
-          hoverEnabled: false
-          cursorShape: Qt.PointingHandCursor
-          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
-        }
+        readonly property bool tooltipHovered: cpuMouseArea.containsMouse
 
         Column {
           id: cpuCol
@@ -310,6 +283,19 @@ BarWidget {
             renderType: Text.NativeRendering
           }
         }
+
+        MouseArea {
+          id: cpuMouseArea
+          anchors.fill: parent
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(cpuItem, root.cpuTooltipText)
+          }
+          onExited: if (root.bar) root.bar.hideTooltip(cpuItem)
+          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
+        }
       }
 
       // 3. MEM Column Item (Fixed stable width completely prevents geometry jitter)
@@ -317,27 +303,7 @@ BarWidget {
         id: memItem
         width: Style.space(38)
         height: root.barSize
-        readonly property bool tooltipHovered: memHover.hovered
-
-        HoverHandler {
-          id: memHover
-          onHoveredChanged: {
-            if (hovered) {
-              if (!sysmonProc.running) sysmonProc.running = true
-              if (root.bar) root.bar.showTooltip(memItem, root.memTooltipText)
-            } else {
-              if (root.bar) root.bar.hideTooltip(memItem)
-            }
-          }
-        }
-
-        MouseArea {
-          id: memMouseArea
-          anchors.fill: parent
-          hoverEnabled: false
-          cursorShape: Qt.PointingHandCursor
-          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
-        }
+        readonly property bool tooltipHovered: memMouseArea.containsMouse
 
         Column {
           id: memCol
@@ -364,6 +330,19 @@ BarWidget {
             opacity: 1.0
             renderType: Text.NativeRendering
           }
+        }
+
+        MouseArea {
+          id: memMouseArea
+          anchors.fill: parent
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onEntered: {
+            if (!sysmonProc.running) sysmonProc.running = true
+            if (root.bar) root.bar.showTooltip(memItem, root.memTooltipText)
+          }
+          onExited: if (root.bar) root.bar.hideTooltip(memItem)
+          onClicked: if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
         }
       }
     }
