@@ -199,7 +199,6 @@ BarWidget {
         id: netItem
         width: Style.space(88)
         height: root.barSize
-        readonly property var QsWindow: root.QsWindow
         readonly property bool tooltipHovered: netMouseArea.containsMouse
 
         Column {
@@ -267,7 +266,6 @@ BarWidget {
         id: cpuItem
         width: Style.space(38)
         height: root.barSize
-        readonly property var QsWindow: root.QsWindow
         readonly property bool tooltipHovered: cpuMouseArea.containsMouse
 
         Column {
@@ -316,7 +314,6 @@ BarWidget {
         id: memItem
         width: Style.space(38)
         height: root.barSize
-        readonly property var QsWindow: root.QsWindow
         readonly property bool tooltipHovered: memMouseArea.containsMouse
 
         Column {
