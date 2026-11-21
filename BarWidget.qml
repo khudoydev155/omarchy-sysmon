@@ -114,14 +114,16 @@ BarWidget {
     // 1. Network Tooltip
     var netLines = [
       "↑ " + root.upSpeed.trim() + "   ↓ " + root.downSpeed.trim(),
-      "󰛳 Total: " + (data.daily_total_str || "0 B") + " (↓ " + (data.daily_rx_str || "0 B") + "  ↑ " + (data.daily_tx_str || "0 B") + ")"
+      "󰛳 Daily:   " + (data.daily_total_str || "0 B") + " (↓ " + (data.daily_rx_str || "0 B") + "  ↑ " + (data.daily_tx_str || "0 B") + ")",
+      "─────────────────────────────"
     ]
     if (data.top_net_lines && data.top_net_lines.length > 0) {
-      netLines.push("─────────────────────────────")
       for (var i = 0; i < data.top_net_lines.length; i++) {
         netLines.push(data.top_net_lines[i])
       }
+      netLines.push("─────────────────────────────")
     }
+    netLines.push("󰛳 Monthly: " + (data.monthly_total_str || "0 B") + " (↓ " + (data.monthly_rx_str || "0 B") + "  ↑ " + (data.monthly_tx_str || "0 B") + ")")
     root.netTooltipText = netLines.join("\n")
 
     // 2. CPU Tooltip
@@ -153,14 +155,14 @@ BarWidget {
     }
     root.memTooltipText = memLines.join("\n")
 
-    // Live update open tooltip text without flicker
-    if (root.bar && root.bar.tooltipShown) {
-      if (root.bar.tooltipTarget === netItem) {
-        root.bar.tooltipText = root.netTooltipText
-      } else if (root.bar.tooltipTarget === cpuItem) {
-        root.bar.tooltipText = root.cpuTooltipText
-      } else if (root.bar.tooltipTarget === memItem) {
-        root.bar.tooltipText = root.memTooltipText
+    // Live update open tooltip while hovered
+    if (root.bar) {
+      if (netMouseArea.containsMouse) {
+        root.bar.showTooltip(netItem, root.netTooltipText)
+      } else if (cpuMouseArea.containsMouse) {
+        root.bar.showTooltip(cpuItem, root.cpuTooltipText)
+      } else if (memMouseArea.containsMouse) {
+        root.bar.showTooltip(memItem, root.memTooltipText)
       }
     }
   }
@@ -176,7 +178,7 @@ BarWidget {
 
   Timer {
     id: pollTimer
-    interval: 1500
+    interval: root.tooltipHovered ? 1000 : 1500
     running: true
     repeat: true
     triggeredOnStart: true

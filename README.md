@@ -6,10 +6,10 @@ Displays real-time network speeds, CPU usage, and Memory percentage in a compact
 
 ## Features
 
-- **🌐 Network Speed & Daily Traffic**:
+- **🌐 Network Speed, Daily & Monthly Traffic**:
   - Live upload (`↑`) and download (`↓`) speeds.
-  - Independent hover tooltip showing **Daily Total** traffic (`Total: X MB (↓ Y MB ↑ Z MB)`).
-  - Breakdown of active applications and background processes using network bandwidth with application icons.
+  - Independent hover tooltip showing **Daily** and **Monthly** traffic (`Daily: X MB (↓ Y MB ↑ Z MB)` and `Monthly: X GB`).
+  - Breakdown of active applications and background processes using daily bandwidth with application icons.
 - **⚡ CPU Monitoring**:
   - Real-time overall CPU usage percentage (`CPU XX%`).
   - Independent hover tooltip showing system load averages (`1m, 5m, 15m`) and top CPU-consuming processes.

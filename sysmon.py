@@ -26,12 +26,20 @@ def get_icon(name):
         return ""
     if any(x in low for x in ["code", "codium", "studio", "android"]):
         return "󰅩"
-    if any(x in low for x in ["agy", "antigravity", "gemini"]):
+    if any(x in low for x in ["agy", "antigravity", "gemini", "claude"]):
         return "󰚩"
     if any(x in low for x in ["discord", "vesktop"]):
         return "󰙯"
     if any(x in low for x in ["spotify"]):
         return ""
+    if any(x in low for x in ["mpv", "vlc", "yt-dlp"]):
+        return "󰕼"
+    if any(x in low for x in ["curl", "wget"]):
+        return "󰖟"
+    if any(x in low for x in ["git"]):
+        return "󰊢"
+    if any(x in low for x in ["ssh"]):
+        return "󰣀"
     if any(x in low for x in ["kitty", "foot", "alacritty", "ghostty", "bash", "zsh", "fish"]):
         return ""
     if any(x in low for x in ["hypr", "quick", "waybar"]):
@@ -177,38 +185,81 @@ try:
 except Exception:
     pass
 
-# --- 4. PERSISTENT DAILY NETWORK & PER-APP TRAFFIC ---
+# --- 4. PERSISTENT DAILY & MONTHLY NETWORK & PER-APP TRAFFIC ---
 state_dir = os.path.expanduser("~/.local/state/omarchy")
 os.makedirs(state_dir, exist_ok=True)
 net_file = os.path.join(state_dir, "sysmon_net.json")
 shm_sock_file = "/dev/shm/sysmon_sockets.json"
 today_str = str(date.today())
+month_str = today_str[:7]
 
-accum_rx = 0
-accum_tx = 0
+daily_rx = 0
+daily_tx = 0
+monthly_rx = 0
+monthly_tx = 0
 apps_data = {}
 stored_btime = boot_time
+is_same_day = False
 
-# Load persistent daily data
+# Load persistent daily & monthly data
 if os.path.exists(net_file):
     try:
         with open(net_file, "r") as f:
             sdata = json.load(f)
+
+            # Month check
+            if sdata.get("month") == month_str:
+                monthly_rx = sdata.get("monthly_rx", sdata.get("daily_rx", 0))
+                monthly_tx = sdata.get("monthly_tx", sdata.get("daily_tx", 0))
+            else:
+                monthly_rx = 0
+                monthly_tx = 0
+
+            # Day check
             if sdata.get("date") == today_str:
-                accum_rx = sdata.get("accum_rx", 0)
-                accum_tx = sdata.get("accum_tx", 0)
+                is_same_day = True
                 stored_btime = sdata.get("btime", boot_time)
                 apps_data = sdata.get("apps", {})
                 old_last_rx = sdata.get("last_rx", net_rx)
                 old_last_tx = sdata.get("last_tx", net_tx)
 
+                if "daily_rx" in sdata:
+                    daily_rx = sdata.get("daily_rx", 0)
+                    daily_tx = sdata.get("daily_tx", 0)
+                else:
+                    daily_rx = sdata.get("accum_rx", 0)
+                    daily_tx = sdata.get("accum_tx", 0)
+
                 # Check if reboot occurred today
-                if boot_time != stored_btime:
-                    accum_rx += old_last_rx
-                    accum_tx += old_last_tx
+                if boot_time == stored_btime:
+                    d_rx = max(0, net_rx - old_last_rx)
+                    d_tx = max(0, net_tx - old_last_tx)
+                else:
+                    d_rx = net_rx
+                    d_tx = net_tx
                     stored_btime = boot_time
+
+                daily_rx += d_rx
+                daily_tx += d_tx
+                monthly_rx += d_rx
+                monthly_tx += d_tx
     except Exception:
         pass
+
+if not is_same_day:
+    # New day started or first run
+    boot_date = str(date.fromtimestamp(boot_time)) if boot_time else today_str
+    if boot_date == today_str:
+        daily_rx = net_rx
+        daily_tx = net_tx
+    else:
+        daily_rx = 0
+        daily_tx = 0
+    apps_data = {}
+    stored_btime = boot_time
+    if monthly_rx == 0 and monthly_tx == 0:
+        monthly_rx = daily_rx
+        monthly_tx = daily_tx
 
 # Read active sockets from ss and compute deltas
 prev_socks = {}
@@ -232,6 +283,11 @@ try:
                 cur_p = m.group(1)
             parts = line.split()
             if len(parts) >= 5:
+                # Filter out loopback addresses (127.x.x.x, ::1, [::ffff:127.x.x.x])
+                laddr, raddr = parts[4], parts[5]
+                if any(x in laddr or x in raddr for x in ["127.0.0.1", "127.", "[::1]", "::1", "::ffff:127."]):
+                    cur_key = None
+                    continue
                 cur_key = f"{parts[4]}->{parts[5]}"
             else:
                 cur_key = f"sock_{len(curr_socks)}"
@@ -248,9 +304,12 @@ try:
                 d_tx = max(0, s_val - p_entry.get("tx", 0))
                 d_rx = max(0, r_val - p_entry.get("rx", 0))
             else:
-                # First time seeing this socket
-                d_tx = s_val
-                d_rx = r_val
+                if prev_socks and (s_val + r_val) < 100 * 1024 * 1024:
+                    d_tx = s_val
+                    d_rx = r_val
+                else:
+                    d_tx = 0
+                    d_rx = 0
 
             if d_tx > 0 or d_rx > 0:
                 if cur_p not in apps_data:
@@ -268,10 +327,11 @@ try:
 except Exception:
     pass
 
-# Daily total bytes
-daily_rx = accum_rx + net_rx
-daily_tx = accum_tx + net_tx
+# Daily & Monthly total bytes
+monthly_rx = max(monthly_rx, daily_rx)
+monthly_tx = max(monthly_tx, daily_tx)
 daily_total = daily_rx + daily_tx
+monthly_total = monthly_rx + monthly_tx
 
 # Save persistent state atomically
 try:
@@ -279,9 +339,14 @@ try:
     with open(tmp_file, "w") as f:
         json.dump({
             "date": today_str,
+            "month": month_str,
             "btime": stored_btime,
-            "accum_rx": accum_rx,
-            "accum_tx": accum_tx,
+            "daily_rx": daily_rx,
+            "daily_tx": daily_tx,
+            "monthly_rx": monthly_rx,
+            "monthly_tx": monthly_tx,
+            "accum_rx": daily_rx,
+            "accum_tx": daily_tx,
             "last_rx": net_rx,
             "last_tx": net_tx,
             "apps": apps_data
@@ -290,7 +355,7 @@ try:
 except Exception:
     pass
 
-# Format Top Network lines
+# Format Top Network lines (Daily app traffic)
 top_net_lines = []
 total_apps_bytes = 0
 for pname, data in sorted(apps_data.items(), key=lambda x: x[1].get("total", 0), reverse=True):
@@ -306,7 +371,7 @@ if other_bytes > 1024 * 1024 and len(top_net_lines) < 5:
     top_net_lines.append(f"󰒋 {pad('other/system', 15)} {rpad(fmt_b(other_bytes), 8)}")
 
 if not top_net_lines:
-    top_net_lines.append("󰛳 No app traffic recorded yet")
+    top_net_lines.append("󰛳 No app traffic recorded today")
 
 res = {
     "rx": net_rx,
@@ -325,6 +390,11 @@ res = {
     "daily_total_str": fmt_b(daily_total),
     "daily_rx_str": fmt_b(daily_rx),
     "daily_tx_str": fmt_b(daily_tx),
+    "monthly_rx": monthly_rx,
+    "monthly_tx": monthly_tx,
+    "monthly_total_str": fmt_b(monthly_total),
+    "monthly_rx_str": fmt_b(monthly_rx),
+    "monthly_tx_str": fmt_b(monthly_tx),
     "top_cpu_lines": top_cpu_lines,
     "top_mem_lines": top_mem_lines,
     "top_net_lines": top_net_lines
