@@ -20,27 +20,33 @@ def rpad(s, width):
 
 def get_icon(name):
     low = name.lower()
-    if any(x in low for x in ["brave", "chrome", "chromium", "firefox", "zen", "browser"]):
+    if any(x in low for x in ["brave", "chrome", "chromium", "firefox", "zen", "browser", "librewolf", "edge", "opera", "tor"]):
         return ""
-    if any(x in low for x in ["telegram", "ayugram"]):
+    if any(x in low for x in ["telegram", "ayugram", "kotatogram"]):
         return ""
-    if any(x in low for x in ["code", "codium", "studio", "android"]):
+    if any(x in low for x in ["code", "codium", "studio", "android", "idea", "clion", "pycharm", "webstorm", "nvim", "vim"]):
         return "󰅩"
-    if any(x in low for x in ["agy", "antigravity", "gemini", "claude"]):
+    if any(x in low for x in ["agy", "antigravity", "gemini", "claude", "chatgpt", "ollama"]):
         return "󰚩"
-    if any(x in low for x in ["discord", "vesktop"]):
+    if any(x in low for x in ["discord", "vesktop", "webcord", "armcord"]):
         return "󰙯"
-    if any(x in low for x in ["spotify"]):
+    if any(x in low for x in ["spotify", "ncspot", "rhythmbox"]):
         return ""
-    if any(x in low for x in ["mpv", "vlc", "yt-dlp"]):
+    if any(x in low for x in ["steam", "lutris", "heroic"]):
+        return "󰓓"
+    if any(x in low for x in ["obs"]):
+        return "󰑋"
+    if any(x in low for x in ["mpv", "vlc", "yt-dlp", "ffmpeg"]):
         return "󰕼"
-    if any(x in low for x in ["curl", "wget"]):
+    if any(x in low for x in ["curl", "wget", "aria2", "http"]):
         return "󰖟"
-    if any(x in low for x in ["git"]):
+    if any(x in low for x in ["git", "gh"]):
         return "󰊢"
-    if any(x in low for x in ["ssh"]):
+    if any(x in low for x in ["ssh", "sshd"]):
         return "󰣀"
-    if any(x in low for x in ["kitty", "foot", "alacritty", "ghostty", "bash", "zsh", "fish"]):
+    if any(x in low for x in ["thunderbird", "mail"]):
+        return "󰇮"
+    if any(x in low for x in ["kitty", "foot", "alacritty", "ghostty", "bash", "zsh", "fish", "tmux"]):
         return ""
     if any(x in low for x in ["hypr", "quick", "waybar"]):
         return ""
@@ -54,18 +60,23 @@ def get_icon(name):
 shm_proc_file = "/dev/shm/sysmon_proc.json"
 now_time = time.time()
 
-with open("/proc/stat", "r") as f:
-    stat_lines = f.readlines()
-
-cpu_parts = stat_lines[0].split()
-idle = int(cpu_parts[4]) + int(cpu_parts[5])
-sys_total = sum(int(x) for x in cpu_parts[1:])
-
+idle = 0
+sys_total = 0
 boot_time = 0
-for line in stat_lines:
-    if line.startswith("btime "):
-        boot_time = int(line.split()[1])
-        break
+
+try:
+    with open("/proc/stat", "r") as f:
+        stat_lines = f.readlines()
+    if stat_lines:
+        cpu_parts = stat_lines[0].split()
+        idle = int(cpu_parts[4]) + int(cpu_parts[5])
+        sys_total = sum(int(x) for x in cpu_parts[1:])
+        for line in stat_lines:
+            if line.startswith("btime "):
+                boot_time = int(line.split()[1])
+                break
+except Exception:
+    pass
 
 # Read current process ticks & memory from /proc directly
 curr_procs = {}
