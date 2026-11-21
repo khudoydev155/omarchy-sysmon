@@ -13,6 +13,13 @@ BarWidget {
   property color barForeground: root.bar ? root.bar.barForeground : Commons.Color.foreground
   property color urgentColor: root.bar ? root.bar.urgent : Commons.Color.urgent
 
+  property bool pressable: true
+  property bool interactive: true
+
+  function triggerPress(button) {
+    if (root.bar) root.bar.run("omarchy-launch-floating-terminal-with-presentation btop")
+  }
+
   readonly property int captionFontSize: Math.max(8, Style.font.caption - 1)
   readonly property int valueFontSize: Math.max(9, Style.font.caption)
 
