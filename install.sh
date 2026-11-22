@@ -106,28 +106,68 @@ else
     exit 1
 fi
 
-# 5. Integration Guidance
+# 5. Integration Guidance & Auto-Registration
 SHELL_CONFIG="${HOME}/.config/omarchy/shell.json"
+WAYBAR_CONFIG="${HOME}/.config/waybar/config"
+
 if [ -f "$SHELL_CONFIG" ]; then
     echo -e "\n${BOLD}${GREEN}Omarchy Shell Detected!${NC}"
-    if grep -q "khudoydev.sysmon" "$SHELL_CONFIG"; then
-        echo -e "${GREEN}✓ 'khudoydev.sysmon' is already configured in your shell.json.${NC}"
+    # Automatically add widget to shell.json if not present
+    REGISTER_RESULT=$(python3 -c "
+import json, sys
+config_file = '$SHELL_CONFIG'
+plugin_id = 'khudoydev.sysmon'
+try:
+    with open(config_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    right = data.setdefault('bar', {}).setdefault('layout', {}).setdefault('right', [])
+    if not any(item.get('id') == plugin_id for item in right if isinstance(item, dict)):
+        right.append({'id': plugin_id})
+        with open(config_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2)
+        print('ADDED')
+    else:
+        print('EXISTS')
+except Exception as e:
+    print('ERROR', file=sys.stderr)
+" 2>/dev/null || echo "FAILED")
+
+    if [ "$REGISTER_RESULT" = "ADDED" ]; then
+        echo -e "${GREEN}✓ Successfully added 'khudoydev.sysmon' to ${BLUE}${SHELL_CONFIG}${NC}"
+        if command -v omarchy >/dev/null 2>&1; then
+            echo -e "Reloading Omarchy Shell..."
+            omarchy restart shell >/dev/null 2>&1 || true
+            echo -e "${GREEN}✓ Shell reloaded! Widget is now visible on your bar.${NC}"
+        fi
+    elif [ "$REGISTER_RESULT" = "EXISTS" ]; then
+        echo -e "${GREEN}✓ 'khudoydev.sysmon' is already active in your shell.json.${NC}"
+        if command -v omarchy >/dev/null 2>&1; then
+            omarchy restart shell >/dev/null 2>&1 || true
+        fi
     else
-        echo -e "Add ${YELLOW}\"khudoydev.sysmon\"${NC} to ${BLUE}${SHELL_CONFIG}${NC} inside \"bar.layout.right\":"
+        echo -e "To activate manually, add ${YELLOW}\"khudoydev.sysmon\"${NC} to ${BLUE}${SHELL_CONFIG}${NC} inside \"bar.layout.right\":"
         echo -e '  "right": ['
         echo -e '    { "id": "khudoydev.sysmon" }'
         echo -e '  ]'
+        echo -e "Then run: ${BOLD}${GREEN}omarchy restart shell${NC}"
     fi
-    echo -e "\nTo activate immediately, run: ${BOLD}${GREEN}omarchy restart shell${NC}"
-else
-    echo -e "\n${BOLD}${BLUE}For Waybar (Hyprland / Sway on Ubuntu / Debian / Fedora):${NC}"
-    echo "Add this module to your ~/.config/waybar/config:"
+elif [ -f "$WAYBAR_CONFIG" ] || command -v waybar >/dev/null 2>&1; then
+    echo -e "\n${BOLD}${BLUE}Waybar Environment Detected (Fedora / Ubuntu / Sway / Hyprland):${NC}"
+    echo "To display the System Monitor in Waybar, add this module to your ~/.config/waybar/config:"
     echo '  "custom/sysmon": {'
     echo "    \"exec\": \"python3 ${TARGET_DIR}/sysmon.py waybar\","
     echo '    "return-type": "json",'
     echo '    "interval": 2,'
     echo "    \"on-click\": \"python3 ${TARGET_DIR}/sysmon.py launch_monitor\""
     echo '  }'
+    echo -e "\nAnd include ${YELLOW}\"custom/sysmon\"${NC} in your waybar \"modules-right\"."
+else
+    echo -e "\n${BOLD}${YELLOW}Standard Desktop Environment Detected (${DISTRO_NAME} / GNOME / KDE):${NC}"
+    echo "• Note: Omarchy bar widgets are designed for Omarchy Shell (Quickshell) and Waybar."
+    echo "• In GNOME/KDE, you can run the live CLI monitor directly in your terminal:"
+    echo -e "    ${BOLD}${GREEN}python3 ${TARGET_DIR}/sysmon.py cli${NC}"
+    echo "• Or launch btop system monitor instantly:"
+    echo -e "    ${BOLD}${GREEN}python3 ${TARGET_DIR}/sysmon.py launch_monitor${NC}"
 fi
 
 echo -e "\n${BOLD}${GREEN}✨ Installation complete! System monitoring active! 📊${NC}"
