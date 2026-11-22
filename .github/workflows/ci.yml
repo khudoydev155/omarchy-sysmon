@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Validate Python syntax & compilation
+        run: |
+          python3 -m py_compile sysmon.py
+
+      - name: Validate manifest.json format
+        run: |
+          python3 -m json.tool manifest.json > /dev/null
+
+      - name: Validate install.sh syntax
+        run: |
+          bash -n install.sh
+
+      - name: Test Sysmon backend CLI actions
+        run: |
+          python3 sysmon.py status
+          python3 sysmon.py waybar
+          python3 sysmon.py cli

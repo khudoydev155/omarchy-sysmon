@@ -2,14 +2,16 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg?style=for-the-badge)](https://github.com/khudoydev155/omarchy-sysmon)
-[![Platform](https://img.shields.io/badge/platform-Omarchy%20%7C%20Hyprland-7aa2f7.svg?style=for-the-badge)](https://github.com/basecamp/omarchy)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg?style=for-the-badge)](https://github.com/khudoydev155/omarchy-sysmon)
+[![CI](https://img.shields.io/github/actions/workflow/status/khudoydev155/omarchy-sysmon/ci.yml?branch=main&label=CI&style=for-the-badge)](https://github.com/khudoydev155/omarchy-sysmon/actions)
+[![Distros](https://img.shields.io/badge/distros-Ubuntu%20%7C%20Debian%20%7C%20Fedora%20%7C%20Arch-orange.svg?style=for-the-badge)](#-cross-distribution-support)
+[![Platform](https://img.shields.io/badge/platform-Omarchy%20%7C%20Hyprland%20%7C%20Waybar-7aa2f7.svg?style=for-the-badge)](https://github.com/basecamp/omarchy)
 [![Technology](https://img.shields.io/badge/tech-Quickshell%20%E2%80%A2%20QML%20%E2%80%A2%20Python%203-10b981.svg?style=for-the-badge)](#architecture)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-A sleek, lightweight, and native system monitoring bar widget built specifically for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland + Quickshell).
+A production-grade, zero-dependency system monitoring bar widget crafted for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland + Quickshell) and universally compatible with **Ubuntu, Debian, Fedora, Arch Linux**, and **Waybar**.
 
-Displays real-time network speeds, CPU usage, and Memory percentage in a compact 2-line column layout that integrates seamlessly with your bar, accompanied by rich, dynamic hover tooltips.
+Displays real-time network speeds, CPU usage, and Memory percentage in a jitter-free layout, accompanied by rich live tooltips, an interactive **Companion Inspector Card**, and terminal monitoring integrations.
 
 </div>
 
@@ -17,68 +19,51 @@ Displays real-time network speeds, CPU usage, and Memory percentage in a compact
 
 ## 📸 Preview
 
-### Bar Widget Appearance
-
+### Top Bar Widget
 ```text
 ┌─────────────────────────────────────────┐
 │   ↑  12 KB/s        CPU         MEM     │
-│   ↓ 145 KB/s        18%         58%     │
+│   ↓ 145 KB/s        18%         48%     │
 └─────────────────────────────────────────┘
 ```
 
-### Interactive Hover Tooltips
-
-<table width="100%">
-<tr>
-<th width="33%">🌐 Network Tooltip</th>
-<th width="33%">⚡ CPU Tooltip</th>
-<th width="33%">🧠 Memory Tooltip</th>
-</tr>
-<tr>
-<td valign="top">
-
+### Companion Inspector Card (Right Click)
 ```text
-       ↑ 12 KB/s   ↓ 145 KB/s
-󰛳 Daily:   1.8 GB (↓ 1.3 GB  ↑ 487 MB)
-─────────────────────────────
-   󰚩 agy            1.2 GB
-    brave          827 MB
-    AyuGram        418 MB
-   󰕼 yt-dlp          46 MB
-─────────────────────────────
-󰛳 Monthly: 30.6 GB (↓ 26.5 GB  ↑ 4.0 GB)
+┌──────────────────────────────────────────────┐
+│ 󰓅 System Monitor                          ✕  │
+│ Uptime: 1h 18m • 18 cores                    │
+├──────────────────────────────────────────────┤
+│  CPU: 18%          Load: 1.45, 1.20, 1.15   │
+│ [████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  │
+│    brave                               8.4% │
+│    python3                             5.2% │
+│   󰚩 agy                                 1.5% │
+├──────────────────────────────────────────────┤
+│ 󰘚 RAM: 48% (3.4 GB / 7.1 GB)    Swap: 10%    │
+│ [████████████████░░░░░░░░░░░░░░░░░░░░░░░░░]  │
+│    brave                     1.4 GB (20%)   │
+│    quickshell                 404 MB ( 6%)  │
+│   󰚩 agy                        307 MB ( 4%)  │
+├──────────────────────────────────────────────┤
+│ 󰛳 TRAFFIC TODAY: 903 MB   Month: 34.6 GB     │
+│   ↑ 12 KB/s   ↓ 145 KB/s      ↓ 764M  ↑ 139M │
+│    brave                            675 MB  │
+│   󰣖 system                           233 MB  │
+│   󰚩 agy                              163 MB  │
+├──────────────────────────────────────────────┤
+│ [ 󰓅 Launch Full Monitor (btop / htop) ]      │
+└──────────────────────────────────────────────┘
 ```
 
-</td>
-<td valign="top">
+---
 
-```text
- CPU: 18%   󰓅 1.45, 1.20, 1.15
-─────────────────────────────
-    brave          8.4%
-    python3        5.2%
-    quickshell     2.1%
-   󰚩 agy            1.5%
-   󰓅 btop           0.8%
-```
+## 🖱️ Controls Cheat Sheet
 
-</td>
-<td valign="top">
-
-```text
-󰘚 RAM:  4.3 GB / 7.1 GB (58%)
-󰓡 Swap: 1.8 GB / 14.2 GB (12%)
-─────────────────────────────
-    brave         2.7 GB (37%)
-   󰚩 agy           615 MB ( 8%)
-    quickshell    341 MB ( 5%)
-    AyuGram       266 MB ( 4%)
-   󰣖 java          208 MB ( 3%)
-```
-
-</td>
-</tr>
-</table>
+| Trigger | Action | Behavior |
+| :--- | :--- | :--- |
+| **Left Click** | **Launch Monitor** | Launches terminal monitor (`btop` / `htop` / `top`) in your preferred terminal |
+| **Right Click** | **Companion Inspector** | Opens the interactive companion card with live process lists & meters |
+| **Hover** | **Dynamic Tooltip** | Live ticking tooltips for Network, CPU, or Memory |
 
 ---
 
@@ -87,52 +72,64 @@ Displays real-time network speeds, CPU usage, and Memory percentage in a compact
 - **🌐 Comprehensive Network Monitoring**:
   - **Live Transfer Rates**: Real-time upload (`↑`) and download (`↓`) speeds.
   - **Daily Bandwidth Tracking**: Automatically tracks total daily traffic with download (`↓`) and upload (`↑`) breakdowns, resetting at midnight.
-  - **Monthly Bandwidth Tracking**: Accumulates monthly network usage, rolling over automatically on the 1st of every month.
-  - **Per-Process Traffic Attribution**: Tracks active applications and background services consuming bandwidth via socket inspection, complete with curated Nerd Font application icons.
-  - **Loopback Traffic Isolation**: Filters internal loopback sockets (`127.0.0.1`, `::1`) so local IPC (e.g., Android emulator ADB, local databases) does not distort real Internet usage stats.
+  - **Monthly Bandwidth Tracking**: Accumulates monthly network usage, rolling over on the 1st of every month.
+  - **Per-Process Traffic Attribution**: Tracks active applications and background services consuming bandwidth via socket telemetry, complete with curated Nerd Font application icons.
+  - **Loopback Traffic Isolation**: Filters internal loopback sockets (`127.0.0.1`, `::1`) so local IPC (databases, emulators) does not distort real Internet usage stats.
 
 - **⚡ Real-Time CPU & Load Analytics**:
   - Live CPU percentage computed directly from differential `/proc/stat` ticks.
   - Instant 1-minute, 5-minute, and 15-minute system load averages (`󰓅`).
-  - Process list showing the top 5 CPU-consuming applications in real-time.
+  - Processor model and core count detected dynamically from `/proc/cpuinfo`.
+  - Process list showing the top CPU-consuming applications in real-time.
   - Visual urgency indicator (turns red/urgent color when CPU > 85%).
 
 - **🧠 Exact Memory & Swap Accounting**:
-  - Real-time RAM percentage utilizing accurate `MemTotal - MemAvailable` accounting from `/proc/meminfo`.
+  - Accurate RAM percentage utilizing `MemTotal - MemAvailable` accounting from `/proc/meminfo`.
   - Exact breakdown of RAM and Swap usage (`Used / Total`).
-  - Top memory-consuming processes ranked by Resident Set Size (RSS) with individual percentage shares.
+  - Top memory-consuming processes ranked by Resident Set Size (RSS).
   - Visual urgency indicator when RAM > 90%.
 
-- **🔄 Real-Time Live Tooltips**:
-  - Tooltips dynamically tick every second while hovered, ensuring up-to-the-second precision without UI flicker.
-
-- **🖱️ Quick Access to System Monitor**:
-  - Clicking any metric immediately launches `btop` in an Omarchy floating terminal window.
-
-- **🎨 Seamless Native Integration**:
-  - Automatically matches your active Omarchy theme colors, fonts, bar height, spacing, and Nerd Font icons.
+- **🖱️ Smart Cross-Distro Terminal Monitor Launcher**:
+  - Automatically launches `btop`, falling back to `htop` or `top`.
+  - Works with Omarchy's floating presentation window, or standard terminal emulators (`ghostty`, `kitty`, `foot`, `alacritty`, `wezterm`, `gnome-terminal`, `xterm`).
 
 ---
 
-## 🚀 Installation
+## 🐧 Cross-Distribution Support
 
-### Option 1: Direct via Omarchy CLI (Recommended)
+Omarchy System Monitor relies exclusively on standard Linux `/proc` and POSIX telemetry. It runs out-of-the-box on all major Linux distributions:
 
-Run the following command in your terminal:
+| Distribution Family | Package Manager Command |
+| :--- | :--- |
+| **Ubuntu / Debian / Linux Mint / Pop!_OS** | `sudo apt update && sudo apt install -y python3 iproute2 btop` |
+| **Fedora / RHEL / CentOS / Rocky** | `sudo dnf install -y python3 iproute btop` |
+| **Arch Linux / Omarchy / Manjaro** | `sudo pacman -S --needed python iproute2 btop` |
+| **openSUSE / SUSE** | `sudo zypper install -y python3 iproute2 btop` |
+
+---
+
+## 🚀 One-Line Universal Installation
+
+Run the universal installer in your terminal:
 
 ```bash
-omarchy plugin add https://github.com/khudoydev155/omarchy-sysmon.git --enable
+curl -fsSL https://raw.githubusercontent.com/khudoydev155/omarchy-sysmon/main/install.sh | bash
 ```
 
-### Option 2: Manual Git Clone
+The script automatically detects your distribution, verifies dependencies, tests the backend, and registers the plugin.
 
-Clone the repository into your Omarchy plugins directory:
+---
 
+## 📦 Manual Installation
+
+### 1. Clone into Plugins Directory
 ```bash
 git clone https://github.com/khudoydev155/omarchy-sysmon.git ~/.config/omarchy/plugins/khudoydev.sysmon
+chmod +x ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py
 ```
 
-Then add `"khudoydev.sysmon"` to your bar layout in `~/.config/omarchy/shell.json`:
+### 2. Enable in Omarchy Shell
+Add `"khudoydev.sysmon"` to your `~/.config/omarchy/shell.json` inside `"bar.layout.right"`:
 
 ```json
 {
@@ -146,73 +143,74 @@ Then add `"khudoydev.sysmon"` to your bar layout in `~/.config/omarchy/shell.jso
 }
 ```
 
-Reload the Omarchy shell to activate:
-
+Reload the shell:
 ```bash
 omarchy restart shell
 ```
 
 ---
 
-## ⚙️ How It Works
+## 🧭 Waybar Configuration (Hyprland / Sway)
 
-- **QML Frontend (`BarWidget.qml`)**:
-  A lightweight Quickshell component that handles UI rendering, responsive sizing, theme bindings, mouse interaction, and live tooltip updates.
-- **Python Backend (`sysmon.py`)**:
-  A fast, asynchronous script reading directly from `/proc` (`/proc/stat`, `/proc/net/dev`, `/proc/meminfo`, `/proc/loadavg`, `/proc/[pid]/stat`, `/proc/[pid]/statm`) and standard `ss` socket telemetry.
-- **Persistent State (`~/.local/state/omarchy/sysmon_net.json`)**:
-  Stores daily and monthly accumulators locally. If the computer reboots during the day, your daily traffic count is preserved without starting from zero or inheriting stale boot counters.
+For users running **Waybar** on Ubuntu, Debian, Fedora, or Arch Linux, add this module to `~/.config/waybar/config`:
 
----
-
-## 📋 Requirements & Dependencies
-
-- **OS**: Linux (tested on Arch Linux / Omarchy Linux)
-- **Desktop**: Hyprland with Quickshell
-- **Runtime**: Python 3 (`python3`)
-- **Tools**: `iproute2` (`ss` - pre-installed on standard Linux distributions)
-- **Fonts**: Any Nerd Font (e.g., *JetBrainsMono Nerd Font*, pre-installed on Omarchy)
-- **Optional**: `btop` (for click-to-open system monitor)
-
----
-
-## 🛠️ Troubleshooting & FAQ
-
-<details>
-<summary><b>How do I reset my daily or monthly traffic counter?</b></summary>
-<br>
-Simply remove the state file:
-
-```bash
-rm ~/.local/state/omarchy/sysmon_net.json
-```
-The counter will reinitialize on the next polling cycle.
-</details>
-
-<details>
-<summary><b>The icons look like squares or broken glyphs. What should I do?</b></summary>
-<br>
-Make sure a compatible Nerd Font is installed and configured in your system font settings. Omarchy comes pre-configured with Nerd Fonts by default.
-</details>
-
-<details>
-<summary><b>Can I change the polling interval?</b></summary>
-<br>
-Yes! Open `BarWidget.qml` and locate <code>pollTimer</code>:
-
-```qml
-Timer {
-  id: pollTimer
-  interval: root.tooltipHovered ? 1000 : 1500 // 1.5s normally, 1s when hovered
-  ...
+```json
+"custom/sysmon": {
+    "exec": "python3 ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py waybar",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "python3 ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py launch_monitor"
 }
 ```
-Adjust the intervals according to your preference and restart the shell.
-</details>
+
+And style in `~/.config/waybar/style.css`:
+```css
+#custom-sysmon {
+    color: #cdd6f4;
+    padding: 0 10px;
+}
+#custom-sysmon.urgent {
+    color: #f38ba8;
+}
+```
+
+---
+
+## 💻 Terminal / CLI Usage
+
+You can also inspect system telemetry directly from any terminal:
+
+```bash
+# View terminal status dashboard
+python3 ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py cli
+
+# Launch full terminal monitor
+python3 ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py launch_monitor
+
+# Raw JSON output
+python3 ~/.config/omarchy/plugins/khudoydev.sysmon/sysmon.py status
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+omarchy-sysmon/
+├── .github/
+│   └── workflows/
+│       └── ci.yml          # GitHub Actions CI workflow (syntax & self-test)
+├── BarWidget.qml           # Quickshell interactive QML widget & companion card
+├── sysmon.py               # Python differential /proc reader & Waybar backend
+├── install.sh              # Universal cross-distro auto-installer
+├── manifest.json           # Omarchy plugin descriptor
+├── CONTRIBUTING.md         # Developer contribution guidelines
+├── LICENSE                 # MIT License
+└── README.md               # Documentation & guides
+```
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
-Feel free to use, modify, and contribute!
+MIT © [Muhammad Xudayberganov (khudoydev155)](https://github.com/khudoydev155)
