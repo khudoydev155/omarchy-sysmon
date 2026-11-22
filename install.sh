@@ -156,13 +156,10 @@ elif command -v gnome-shell >/dev/null 2>&1 || [[ "${XDG_CURRENT_DESKTOP:-}" =~ 
         echo -e "${GREEN}✓ Installed GNOME Extension to ${BLUE}${GNOME_EXT_DIR}${NC}"
     fi
 
-    # Enable the extension via gnome-extensions CLI
-    if command -v gnome-extensions >/dev/null 2>&1; then
-        gnome-extensions enable "$GNOME_EXT_UUID" >/dev/null 2>&1 || true
-    fi
-
-    # Also register in GSettings enabled-extensions
+    # Ensure user extensions and version validation are enabled
     if command -v gsettings >/dev/null 2>&1; then
+        gsettings set org.gnome.shell disable-user-extensions false 2>/dev/null || true
+        gsettings set org.gnome.shell disable-extension-version-validation true 2>/dev/null || true
         python3 -c "
 import subprocess, ast
 uuid = '$GNOME_EXT_UUID'
@@ -172,14 +169,22 @@ try:
     arr = ast.literal_eval(clean) if (clean.startswith('[') and clean.endswith(']')) else []
     if uuid not in arr:
         arr.append(uuid)
-        subprocess.run(['gsettings', 'set', 'org.gnome.shell', 'enabled-extensions', str(arr)], check=True)
+        formatted = '[' + ', '.join(f\"'{x}'\" for x in arr) + ']'
+        subprocess.run(['gsettings', 'set', 'org.gnome.shell', 'enabled-extensions', formatted], check=True)
 except Exception:
     pass
 " 2>/dev/null || true
     fi
 
+    # Enable the extension via gnome-extensions CLI
+    if command -v gnome-extensions >/dev/null 2>&1; then
+        gnome-extensions enable "$GNOME_EXT_UUID" >/dev/null 2>&1 || true
+    fi
+
     echo -e "${BOLD}${GREEN}✓ GNOME Topbar Extension enabled!${NC}"
-    echo -e "${YELLOW}👉 Note for GNOME users: On Wayland, please Log Out & Log Back In to display the widget on your top bar.${NC}"
+    echo -e "${YELLOW}👉 Note for GNOME users: If not visible yet, run:${NC}"
+    echo -e "   ${BOLD}${GREEN}gnome-extensions enable $GNOME_EXT_UUID${NC}"
+    echo -e "   or check status with: ${BLUE}gnome-extensions info $GNOME_EXT_UUID${NC}"
 
 elif [ -f "$WAYBAR_CONFIG" ] || command -v waybar >/dev/null 2>&1; then
     echo -e "\n${BOLD}${BLUE}Waybar Environment Detected (Hyprland / Sway):${NC}"
