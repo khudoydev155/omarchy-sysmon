@@ -12,6 +12,9 @@
 
 Designed for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland + Quickshell) and universally compatible with **Ubuntu, Debian, Fedora, Arch Linux, openSUSE**, and **Waybar**.
 
+> ⚠️ **Important Desktop Environment Notice**:
+> Top bar widgets require **Omarchy Shell** or **Waybar** (Hyprland / Sway). Standard **GNOME** (default Fedora / Ubuntu) or **KDE** panels do not support Omarchy QML bar widgets directly. On standard GNOME/KDE, you can use the full System Monitor engine via [CLI commands](#-terminal--cli-usage) or launch btop directly!
+
 [Quick Install](#-1-line-universal-installation) • [Distro Setup](#-distribution-install-commands) • [Bar Setup](#-bar-configuration) • [CLI Usage](#-terminal--cli-usage) • [Contributing](#-contributing)
 
 </div>
@@ -72,7 +75,9 @@ curl -fsSL https://raw.githubusercontent.com/khudoydev155/omarchy-sysmon/main/in
 
 ## 📦 Distribution Install Commands
 
-Copy and paste the exact command for your package manager:
+> 💡 **Two-step setup**:
+> 1. Run the commands for your distribution below to install packages and download the plugin.
+> 2. Then follow [🧩 Bar Configuration](#-bar-configuration) to enable it in **Omarchy Shell** or **Waybar**.
 
 ### 🏹 Arch Linux / Omarchy / Manjaro / EndeavourOS
 
