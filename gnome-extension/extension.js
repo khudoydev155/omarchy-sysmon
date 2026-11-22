@@ -12,7 +12,7 @@ export default class OmarchySysmonExtension extends Extension {
             this._indicator = new PanelMenu.Button(0.0, 'Omarchy System Monitor', false);
             
             this._label = new St.Label({
-                text: '↑ 0 KB/s  ↓ 0 KB/s  CPU 0%  MEM 0%',
+                text: 'CPU 0%  RAM 0%',
                 y_align: Clutter.ActorAlign.CENTER
             });
             this._indicator.add_child(this._label);
@@ -26,7 +26,7 @@ export default class OmarchySysmonExtension extends Extension {
             this._indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             // Live stats placeholder in menu
-            this._statsItem = new PopupMenu.PopupMenuItem('Loading stats...', { reactive: false });
+            this._statsItem = new PopupMenu.PopupMenuItem('Loading system stats...', { reactive: false });
             this._indicator.menu.addMenuItem(this._statsItem);
             this._indicator.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -46,10 +46,17 @@ export default class OmarchySysmonExtension extends Extension {
                         let jsonStr = new TextDecoder().decode(out).trim();
                         let data = JSON.parse(jsonStr);
                         if (data && data.text) {
-                            this._label.set_text(data.text);
+                            let cleanText = data.text
+                                .replace(/\uf4bc/g, 'CPU')
+                                .replace(/\udb81\ude1a/g, 'RAM')
+                                .replace(/\s+/g, ' ')
+                                .trim();
+                            this._label.set_text(cleanText || data.text);
                         }
                         if (data && data.tooltip && this._statsItem) {
-                            this._statsItem.label.set_text(data.tooltip);
+                            let cleanTooltip = data.tooltip
+                                .replace(/[\uf4bc\udb81\udef3\udb81\ude1a\udb81\udce1]/g, '•');
+                            this._statsItem.label.set_text(cleanTooltip);
                         }
                     }
                 } catch (e) {
