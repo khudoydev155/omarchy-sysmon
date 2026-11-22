@@ -10,10 +10,7 @@
 [![Desktop](https://img.shields.io/badge/desktop-Omarchy%20%7C%20Hyprland%20%7C%20Waybar-7aa2f7?style=for-the-badge)](#-bar-configuration)
 [![License: MIT](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)](LICENSE)
 
-Designed for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland + Quickshell) and universally compatible with **Ubuntu, Debian, Fedora, Arch Linux, openSUSE**, and **Waybar**.
-
-> ⚠️ **Important Desktop Environment Notice**:
-> Top bar widgets require **Omarchy Shell** or **Waybar** (Hyprland / Sway). Standard **GNOME** (default Fedora / Ubuntu) or **KDE** panels do not support Omarchy QML bar widgets directly. On standard GNOME/KDE, you can use the full System Monitor engine via [CLI commands](#-terminal--cli-usage) or launch btop directly!
+Designed for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland + Quickshell) and universally compatible with **GNOME Desktop (Fedora, Ubuntu, Debian)**, **Waybar**, and all major Linux distributions.
 
 [Quick Install](#-1-line-universal-installation) • [Distro Setup](#-distribution-install-commands) • [Bar Setup](#-bar-configuration) • [CLI Usage](#-terminal--cli-usage) • [Contributing](#-contributing)
 
@@ -23,7 +20,7 @@ Designed for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland 
 
 ## 📸 Preview
 
-### Top Bar Widget
+### Top Bar Widget (Omarchy / GNOME / Waybar)
 ```text
 ┌─────────────────────────────────────────┐
 │   ↑  12 KB/s        CPU         MEM     │
@@ -63,13 +60,16 @@ Designed for **[Omarchy Linux](https://github.com/basecamp/omarchy)** (Hyprland 
 
 ## ⚡ 1-Line Universal Installation
 
-The fastest way to install on **any Linux distribution** (Arch, Ubuntu, Debian, Fedora, openSUSE):
+The fastest way to install on **any Linux distribution** (Arch, Fedora, Ubuntu, Debian, openSUSE):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/khudoydev155/omarchy-sysmon/main/install.sh | bash
 ```
 
-> The installer automatically detects your distribution, checks dependencies, verifies the backend, and installs the plugin into `~/.config/omarchy/plugins/khudoydev.sysmon/`.
+> **What the installer automatically does:**
+> - 🏹 **Omarchy Shell**: Auto-registers in `~/.config/omarchy/shell.json` and reloads the bar immediately.
+> - 🎩 **Fedora / Ubuntu GNOME**: Installs & enables the native GNOME Shell Extension (`omarchy-sysmon@khudoydev.github.com`) on your top bar.
+> - 🌊 **Waybar (Hyprland / Sway)**: Auto-configures `~/.config/waybar/config` and reloads Waybar.
 
 ---
 
@@ -169,7 +169,21 @@ omarchy restart shell
 
 ---
 
-### 2. Waybar (Hyprland / Sway on Ubuntu, Debian, Fedora, Arch)
+### 2. GNOME Shell (Fedora, Ubuntu, Debian, Pop!_OS)
+
+Our 1-line installer automatically installs and enables the GNOME extension. To manually install it:
+
+```bash
+mkdir -p ~/.local/share/gnome-shell/extensions/omarchy-sysmon@khudoydev.github.com
+cp -r ~/.config/omarchy/plugins/khudoydev.sysmon/gnome-extension/* ~/.local/share/gnome-shell/extensions/omarchy-sysmon@khudoydev.github.com/
+gnome-extensions enable omarchy-sysmon@khudoydev.github.com
+```
+
+> 💡 **Note**: On Wayland, log out and log back into your user session to display it on your GNOME top bar.
+
+---
+
+### 3. Waybar (Hyprland / Sway on Ubuntu, Debian, Fedora, Arch)
 
 Add this module block to your `~/.config/waybar/config`:
 

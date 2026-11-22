@@ -1,0 +1,13 @@
+{
+  "name": "Omarchy System Monitor",
+  "description": "Zero-dependency network speed, CPU, and memory monitor for GNOME top bar",
+  "uuid": "omarchy-sysmon@khudoydev.github.com",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48"
+  ],
+  "url": "https://github.com/khudoydev155/omarchy-sysmon",
+  "version": 1
+}
