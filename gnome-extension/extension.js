@@ -12,7 +12,7 @@ export default class OmarchySysmonExtension extends Extension {
             this._indicator = new PanelMenu.Button(0.0, 'Omarchy System Monitor', false);
             
             this._label = new St.Label({
-                text: 'CPU 0%  RAM 0%',
+                text: '⚡ 0%  📊 0%',
                 y_align: Clutter.ActorAlign.CENTER
             });
             this._indicator.add_child(this._label);
@@ -47,15 +47,22 @@ export default class OmarchySysmonExtension extends Extension {
                         let data = JSON.parse(jsonStr);
                         if (data && data.text) {
                             let cleanText = data.text
-                                .replace(/\uf4bc/g, 'CPU')
-                                .replace(/\udb81\ude1a/g, 'RAM')
+                                .replace(/\uf4bc/gu, '⚡')
+                                .replace(/\u{f061a}|󰘚/gu, '📊')
+                                .replace(/[\uE000-\uF8FF\u{F0000}-\u{FFFFF}]/gu, '')
                                 .replace(/\s+/g, ' ')
                                 .trim();
                             this._label.set_text(cleanText || data.text);
                         }
                         if (data && data.tooltip && this._statsItem) {
                             let cleanTooltip = data.tooltip
-                                .replace(/[\uf4bc\udb81\udef3\udb81\ude1a\udb81\udce1]/g, '•');
+                                .replace(/\uf4bc/gu, '⚡')
+                                .replace(/\u{f061a}|󰘚/gu, '📊')
+                                .replace(/\u{f04e1}|󰓡/gu, '💾')
+                                .replace(/(\u{f06f3}|󰛳)\s*Today/gu, '🌐 Today')
+                                .replace(/(\u{f06f3}|󰛳)\s*Monthly/gu, '📈 Monthly')
+                                .replace(/\u{f06f3}|󰛳/gu, '🌐')
+                                .replace(/[\uE000-\uF8FF\u{F0000}-\u{FFFFF}]/gu, '•');
                             this._statsItem.label.set_text(cleanTooltip);
                         }
                     }
