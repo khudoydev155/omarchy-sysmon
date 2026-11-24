@@ -176,8 +176,9 @@ except Exception:
 " 2>/dev/null || true
     fi
 
-    # Enable the extension via gnome-extensions CLI
+    # Reload and enable the extension via gnome-extensions CLI
     if command -v gnome-extensions >/dev/null 2>&1; then
+        gnome-extensions disable "$GNOME_EXT_UUID" >/dev/null 2>&1 || true
         gnome-extensions enable "$GNOME_EXT_UUID" >/dev/null 2>&1 || true
     fi
 
