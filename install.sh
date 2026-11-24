@@ -40,19 +40,25 @@ check_and_install_deps() {
         echo "To install missing packages:"
         case "$DISTRO" in
             ubuntu|debian|linuxmint|pop)
-                echo -e "  Run: ${GREEN}sudo apt update && sudo apt install -y python3 iproute2 btop${NC}"
+                echo -e "  Run: ${GREEN}sudo apt update && sudo apt install -y python3 iproute2 btop fonts-noto-color-emoji${NC}"
                 ;;
             fedora|rhel|centos|rocky|alma)
-                echo -e "  Run: ${GREEN}sudo dnf install -y python3 iproute btop${NC}"
+                echo -e "  Run: ${GREEN}sudo dnf install -y python3 iproute btop google-noto-color-emoji-fonts${NC}"
                 ;;
             arch|omarchy|manjaro|endeavouros)
-                echo -e "  Run: ${GREEN}sudo pacman -S --needed python iproute2 btop${NC}"
+                echo -e "  Run: ${GREEN}sudo pacman -S --needed python iproute2 btop noto-fonts-emoji${NC}"
                 ;;
             opensuse*|suse)
-                echo -e "  Run: ${GREEN}sudo zypper install -y python3 iproute2 btop${NC}"
+                echo -e "  Run: ${GREEN}sudo zypper install -y python3 iproute2 btop noto-coloremoji-fonts${NC}"
+                ;;
+            void)
+                echo -e "  Run: ${GREEN}sudo xbps-install -S python3 iproute2 btop noto-fonts-emoji${NC}"
+                ;;
+            alpine)
+                echo -e "  Run: ${GREEN}sudo apk add python3 iproute2 btop font-noto-emoji${NC}"
                 ;;
             *)
-                echo -e "  Please install python3 and iproute2 with your package manager."
+                echo -e "  Please install python3, iproute2, btop, and standard emoji fonts with your package manager."
                 ;;
         esac
     else
@@ -109,6 +115,7 @@ fi
 # 5. Integration Guidance & Auto-Registration
 SHELL_CONFIG="${HOME}/.config/omarchy/shell.json"
 WAYBAR_CONFIG="${HOME}/.config/waybar/config"
+[ -f "${HOME}/.config/waybar/config.jsonc" ] && WAYBAR_CONFIG="${HOME}/.config/waybar/config.jsonc"
 
 if [ -f "$SHELL_CONFIG" ]; then
     echo -e "\n${BOLD}${GREEN}Omarchy Shell Detected!${NC}"
@@ -191,11 +198,14 @@ elif [ -f "$WAYBAR_CONFIG" ] || command -v waybar >/dev/null 2>&1; then
     echo -e "\n${BOLD}${BLUE}Waybar Environment Detected (Hyprland / Sway):${NC}"
     if [ -f "$WAYBAR_CONFIG" ]; then
         python3 -c "
-import json
+import json, re
 cfg = '$WAYBAR_CONFIG'
 try:
     with open(cfg, 'r', encoding='utf-8') as f:
-        d = json.load(f)
+        raw = f.read()
+    clean = re.sub(r'/\*.*?\*/', '', raw, flags=re.DOTALL)
+    clean = re.sub(r'//.*', '', clean)
+    d = json.loads(clean)
     if isinstance(d, dict) and 'custom/sysmon' not in d:
         d['custom/sysmon'] = {
             'exec': 'python3 ${TARGET_DIR}/sysmon.py waybar',

@@ -57,9 +57,13 @@ def get_icon(name):
     return "󰣖"
 
 def get_shm_path(filename):
+    uid = os.getuid() if hasattr(os, "getuid") else 1000
+    user_filename = f"u{uid}_{filename}"
     shm_dir = "/dev/shm"
     if os.path.exists(shm_dir) and os.access(shm_dir, os.W_OK):
-        return os.path.join(shm_dir, filename)
+        path = os.path.join(shm_dir, user_filename)
+        if not os.path.exists(path) or os.access(path, os.W_OK):
+            return path
     fallback = os.path.expanduser("~/.local/state/omarchy")
     os.makedirs(fallback, exist_ok=True)
     return os.path.join(fallback, filename)
@@ -482,6 +486,8 @@ def launch_monitor():
     term_candidates = [
         "xdg-terminal-exec",
         os.environ.get("TERMINAL"),
+        "ptyxis",
+        "kgx",
         "ghostty",
         "kitty",
         "foot",
@@ -495,7 +501,7 @@ def launch_monitor():
     for term in term_candidates:
         if term and shutil.which(term):
             try:
-                if term in ["gnome-terminal", "xfce4-terminal"]:
+                if term in ["gnome-terminal", "xfce4-terminal", "ptyxis"]:
                     subprocess.Popen([term, "--", monitor_cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 else:
                     subprocess.Popen([term, "-e", monitor_cmd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
